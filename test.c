@@ -120,7 +120,7 @@ int main() {
                 }
             }
         } else {
-            text("MARIO", 0, 0);
+            text("MARIYA", 0, 0);
         }
         
         if (ch == 'w') {
