@@ -10,8 +10,10 @@ And only standard language C libraries are used
 3) rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h); - adding a rectangle to the screen
 4) font(char file[]); - loading font
 5) text(char text_str[], uint8_t x, uint8_t y); - outputting text to the screen
-6) draw(); - screen rendering
-7) clear(); - clear screen data
+6) key(); - returns the key symbol from the keyboard
+7) mouse(uint8_t m[3]) - m[0] - key, m[1] - X, m[2] - Y, returns successful events
+8) draw(); - screen rendering
+9) clear(); - clear screen data
 
 # peculiarities
 1) screen 30x30
@@ -21,4 +23,4 @@ And only standard language C libraries are used
 
 # test code
 You can view the test code test.c
-or run it through ./test
+or compile it and run it
