@@ -46,16 +46,19 @@ bool smena = 1;
 uint8_t kadr = 1;
 uint8_t player[4] = {0, 24, 5, 5};
 uint8_t win[4] = {25, 9, 5, 5};
-uint8_t lvl = 0;
+uint8_t ship[3][4] = {
+    {20, 19, 22, 14},
+    {22, 14, 24, 19},
+    {24, 19, 20, 19},
+};
 bool w = false;
 bool jmp = 0;
 uint8_t foot[4] = {10, 19, 20, 11};
 
-uint8_t r[5][4] = {
+uint8_t r[4][4] = {
     {5, 24, 5, 5},
     {10, 19, 5, 5},
     {15, 14, 5, 5},
-    {20, 14, 5, 5},
     {25, 14, 5, 5},
 };
 
@@ -91,6 +94,8 @@ void marioDraw() {
     time++;
 }
 
+uint8_t soon[3] = {3, 9, 3};
+
 int main() {
     font("font.json");
     
@@ -99,6 +104,7 @@ int main() {
         char ch = key();
         jmp = !jmp;
         
+        circle(soon, true);
         rect(ramaUp, true);
         rect(ramaDown, true);
         for (uint8_t a = 0; a < 5; a++) {
@@ -114,23 +120,23 @@ int main() {
             for (uint8_t y = 0; y < 5; y++) {
                 for (uint8_t x = 0; x < 15; x++) {
                     if (img[y][x]) {
-                        pixel
-                        (x+15, y+22);
+                        pixel(x+15, y+22);
                     }
                 }
             }
         } else {
-            text("MARIYA", 0, 0);
+            text("MARIO", 0, 0);
         }
         
         if (ch == 'w') {
-            player[1] -= 13;
+            player[1] -= 8;
         } else if (ch == 'a') {
             player[0]--;
             for (uint8_t a = 0; a < 5; a++) {
                 if (colliderect(player, r[a])) {
                     player[0]++;
                 }
+                if (player[0] == 255) {player[0] = 0;}
             }
         } else if (ch == 'd') {
             player[0]++;
@@ -138,6 +144,7 @@ int main() {
                 if (colliderect(player, r[a])) {
                     player[0]--;
                 }
+                if (player[0] > 30) {player[0] = 30;}
             }
         }
         
@@ -145,6 +152,13 @@ int main() {
         for (uint8_t a = 0; a < 5; a++) {
             if (colliderect(player, r[a])) {
                 player[1]--;
+            }
+        }
+        
+        for (uint8_t a = 0; a < 3; a++) {
+            line(ship[a]);
+            if (collideline(player, ship[a])) {
+                memcpy(player, (uint8_t[]){0, 24, 5, 5}, sizeof(player));
             }
         }
         
@@ -160,8 +174,8 @@ int main() {
         
         if (player[1] > 24) {
             player[1] = 24;
-        } else if (player[1] < 7) {
-            player[1] = 7;
+        } else if (player[1] == 255) {
+            player[1] = 0;
         }
         
         marioDraw();

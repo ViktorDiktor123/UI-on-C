@@ -137,6 +137,125 @@ static inline void rect(uint8_t r[4], bool full) {
     }
 }
 
+// create line
+static inline void line(uint8_t line[4]) {
+    int16_t x1 = line[0];
+    int16_t y1 = line[1];
+    int16_t x2 = line[2];
+    int16_t y2 = line[3];
+    
+    int16_t dx = abs(x2 - x1);
+    int16_t dy = abs(y2 - y1);
+    
+    int16_t sx = (x1 < x2) ? 1 : -1;
+    int16_t sy = (y1 < y2) ? 1 : -1;
+    
+    int16_t err = dx - dy;
+    int16_t e2;
+    
+    int16_t x = x1;
+    int16_t y = y1;
+    
+    while (1) {
+        pixel(x, y);
+        
+        if (x == x2 && y == y2) {
+            break;
+        }
+        
+        e2 = err << 1;
+        
+        if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+        }
+        
+        if (e2 < dx) {
+            err += dx;
+            y += sy;
+        }
+    }
+}
+
+static inline void circle(uint8_t c[3], bool full) {
+    int16_t xc = c[0];
+    int16_t yc = c[1];
+    int16_t r  = c[2];
+    
+    int16_t x = 0;
+    int16_t y = r;
+    int16_t d = 3 - 2 * r;
+    
+    if (full) {
+        uint8_t l_coords[4];
+        
+        #define DRAW_H_LINE(x1, x2, y_pos) \
+        l_coords[0] = (x1); l_coords[1] = (y_pos); \
+        l_coords[2] = (x2); l_coords[3] = (y_pos); \
+        line(l_coords);
+        
+        DRAW_H_LINE(xc - x, xc + x, yc + y);
+        DRAW_H_LINE(xc - x, xc + x, yc - y);
+        DRAW_H_LINE(xc - y, xc + y, yc + x);
+        DRAW_H_LINE(xc - y, xc + y, yc - x);
+        
+        while (y >= x) {
+            x++;
+            
+            if (d > 0) {
+                y--;
+                d = d + 4 * (x - y) + 10;
+            } else {
+                d = d + 4 * x + 6;
+            }
+            
+            DRAW_H_LINE(xc - x, xc + x, yc + y);
+            DRAW_H_LINE(xc - x, xc + x, yc - y);
+            DRAW_H_LINE(xc - y, xc + y, yc + x);
+            DRAW_H_LINE(xc - y, xc + y, yc - x);
+        }
+        
+        #undef DRAW_H_LINE
+    } else {
+        int16_t xc = c[0];
+        int16_t yc = c[1];
+        int16_t r = c[2];
+        
+        int16_t x = 0;
+        int16_t y = r;
+        int16_t d = 3 - 2 * r;
+        
+        pixel(xc + x, yc + y);
+        pixel(xc - x, yc + y);
+        pixel(xc + x, yc - y);
+        pixel(xc - x, yc - y);
+        pixel(xc + y, yc + x);
+        pixel(xc - y, yc + x);
+        pixel(xc + y, yc - x);
+        pixel(xc - y, yc - x);
+        
+        while (y >= x) {
+            x++;
+            
+            if (d > 0) {
+                y--;
+                d = d + 4 * (x - y) + 10;
+            } else {
+                d = d + 4 * x + 6;
+            }
+            
+            pixel(xc + x, yc + y);
+            pixel(xc - x, yc + y);
+            pixel(xc + x, yc - y);
+            pixel(xc - x, yc - y);
+            pixel(xc + y, yc + x);
+            pixel(xc - y, yc - x);
+            pixel(xc + y, yc - x);
+            pixel(xc - y, yc - x);
+        }
+    }
+}
+
 // load font
 static inline void font(char file[]) {
     FILE *f = fopen(file, "r"); 
@@ -210,7 +329,7 @@ static inline bool colliderect(const uint8_t r1[4], const uint8_t r2[4]) {
         (int)y1 + h1 > (int)y2);
 }
 
-//collide point
+// collide point
 static inline bool collidepoint(const uint8_t r[4], uint8_t px, uint8_t py) {
     if (r == NULL) {return false;}
     uint8_t rx = r[0];
@@ -220,6 +339,74 @@ static inline bool collidepoint(const uint8_t r[4], uint8_t px, uint8_t py) {
     return (px >= rx && px < rx + rw &&
             py >= ry && py < ry + rh);
 }
+
+// collide line
+static inline bool collideline(uint8_t rect[4], uint8_t line[4]) {
+    int16_t x1 = line[0];
+    int16_t y1 = line[1];
+    int16_t x2 = line[2];
+    int16_t y2 = line[3];
+    
+    int16_t dx = abs(x2 - x1);
+    int16_t dy = abs(y2 - y1);
+    
+    int16_t sx = (x1 < x2) ? 1 : -1;
+    int16_t sy = (y1 < y2) ? 1 : -1;
+    
+    int16_t err = dx - dy;
+    int16_t e2;
+    
+    int16_t x = x1;
+    int16_t y = y1;
+    
+    while (1) {
+        if (collidepoint(rect, x, y)) {return true;}
+        
+        if (x == x2 && y == y2) {
+            return false;
+        }
+        
+        e2 = err << 1;
+        
+        if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+        }
+        
+        if (e2 < dx) {
+            err += dx;
+            y += sy;
+        }
+    }
+}
+
+// collidecircle
+static inline bool collidecircle(uint8_t c[3], uint8_t r[4]) {
+    int16_t cx = c[0];
+    int16_t cy = c[1];
+    int16_t radius = c[2];
+    
+    int16_t rx = r[0];
+    int16_t ry = r[1];
+    int16_t rw = r[2];
+    int16_t rh = r[3];
+    
+    int16_t closest_x = cx;
+    int16_t closest_y = cy;
+    
+    if (cx < rx) closest_x = rx;
+    else if (cx > rx + rw) closest_x = rx + rw;
+    
+    if (cy < ry) closest_y = ry;
+    else if (cy > ry + rh) closest_y = ry + rh;
+    
+    int16_t dx = cx - closest_x;
+    int16_t dy = cy - closest_y;
+    int32_t distance_squared = (dx * dx) + (dy * dy);
+    
+    return distance_squared <= (radius * radius);
+}
+
 
 // draw screen
 static inline void draw(void) {
