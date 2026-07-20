@@ -126,7 +126,7 @@ int main() {
                 }
             }
         } else {
-            text("MARIO", 0, 0);
+            text("MARYA", 0, 0);
         }
         
         if (ch == 'w') {
