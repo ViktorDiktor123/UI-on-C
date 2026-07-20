@@ -108,7 +108,7 @@ int main() {
         circle(soon, true);
         rect(ramaUp, true);
         rect(ramaDown, true);
-        for (uint8_t a = 0; a < 5; a++) {
+        for (uint8_t a = 0; a < 4; a++) {
             rect(r[a], true);
         }
         rect(win, false);
