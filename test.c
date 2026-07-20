@@ -53,6 +53,7 @@ uint8_t ship[3][4] = {
 };
 bool w = false;
 bool jmp = 0;
+uint8_t jump_timer;
 uint8_t foot[4] = {10, 19, 20, 11};
 
 uint8_t r[4][4] = {
@@ -125,11 +126,11 @@ int main() {
                 }
             }
         } else {
-            text("MARIYA", 0, 0);
+            text("MARIO", 0, 0);
         }
         
         if (ch == 'w') {
-            player[1] -= 8;
+            jump_timer = 8;
         } else if (ch == 'a') {
             player[0]--;
             for (uint8_t a = 0; a < 5; a++) {
@@ -148,7 +149,13 @@ int main() {
             }
         }
         
-        if (jmp) {player[1]++;}
+        if (jump_timer > 0) {
+            player[1]--;
+            jump_timer--;
+        } else {
+            if (jmp) { player[1]++; }
+        }
+        
         for (uint8_t a = 0; a < 5; a++) {
             if (colliderect(player, r[a])) {
                 player[1]--;
