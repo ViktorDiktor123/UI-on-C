@@ -133,7 +133,7 @@ int main() {
             jump_timer = 8;
         } else if (ch == 'a') {
             player[0]--;
-            for (uint8_t a = 0; a < 5; a++) {
+            for (uint8_t a = 0; a < 4; a++) {
                 if (colliderect(player, r[a])) {
                     player[0]++;
                 }
@@ -141,7 +141,7 @@ int main() {
             }
         } else if (ch == 'd') {
             player[0]++;
-            for (uint8_t a = 0; a < 5; a++) {
+            for (uint8_t a = 0; a < 4; a++) {
                 if (colliderect(player, r[a])) {
                     player[0]--;
                 }
@@ -156,7 +156,7 @@ int main() {
             if (jmp) { player[1]++; }
         }
         
-        for (uint8_t a = 0; a < 5; a++) {
+        for (uint8_t a = 0; a < 4; a++) {
             if (colliderect(player, r[a])) {
                 player[1]--;
             }
