@@ -96,14 +96,25 @@ void marioDraw() {
 }
 
 uint8_t soon[3] = {3, 9, 3};
+uint8_t clr = 1;
+uint8_t tme = 0;
 
 int main() {
     font("font.json");
-    
     while (1) {
         clear();
         char ch = key();
         jmp = !jmp;
+        
+        if (tme == 30) {
+            if (clr == 15) {
+                clr = 0;
+            }
+            clr++;
+            tme = 0;
+            setColor(clr);
+        }
+        tme++;
         
         circle(soon, true);
         rect(ramaUp, true);
@@ -129,23 +140,24 @@ int main() {
             text("MARYA", 0, 0);
         }
         
-        if (ch == 'w') {
-            jump_timer = 8;
-        } else if (ch == 'a') {
+        if (ch == 'a') {
             player[0]--;
-            for (uint8_t a = 0; a < 4; a++) {
+            if (player[0] > 30) { player[0] = 0; } 
+            
+            for (uint8_t a = 0; a < 5; a++) {
                 if (colliderect(player, r[a])) {
                     player[0]++;
                 }
-                if (player[0] == 255) {player[0] = 0;}
             }
-        } else if (ch == 'd') {
+        }
+        else if (ch == 'd') {
             player[0]++;
-            for (uint8_t a = 0; a < 4; a++) {
+            if (player[0] > 25) { player[0] = 25; } 
+            
+            for (uint8_t a = 0; a < 5; a++) {
                 if (colliderect(player, r[a])) {
                     player[0]--;
                 }
-                if (player[0] > 30) {player[0] = 30;}
             }
         }
         
@@ -153,7 +165,20 @@ int main() {
             player[1]--;
             jump_timer--;
         } else {
-            if (jmp) { player[1]++; }
+            player[1]++;
+            
+            bool tg = player[0] == 0;
+            for (uint8_t a = 0; a < 5; a++) {
+                if (colliderect(player, r[a])) {
+                    player[1]--;
+                    tg = true;
+                    break;
+                }
+            }
+            
+            if (ch == 'w' && tg) {
+                jump_timer = 8;
+            }
         }
         
         for (uint8_t a = 0; a < 4; a++) {

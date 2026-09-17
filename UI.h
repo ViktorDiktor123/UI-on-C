@@ -4,10 +4,10 @@
 
 // librarys
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -21,6 +21,7 @@
 // arrays
 static uint32_t scr[30] = {0};
 static char font_data[2048] = {0};
+static char* _color = "\e[47m";
 
 static inline void tick(uint16_t tick_rate) {
 #ifdef _WIN32
@@ -106,6 +107,33 @@ static inline bool mouse(uint8_t m[3]) {
 #endif
 }
 
+// set color
+static inline void setColor(uint8_t clr) {
+    static const char* ega_palette[16] = {
+        "\033[40m",
+        "\033[44m",
+        "\033[42m",
+        "\033[46m",
+        "\033[41m",
+        "\033[45m",
+        "\033[43m",
+        "\033[47m",
+        "\033[100m",
+        "\033[104m",
+        "\033[102m",
+        "\033[106m",
+        "\033[101m",
+        "\033[105m",
+        "\033[103m",
+        "\033[107m"
+    };
+
+    if (clr < 16) {
+        _color = ega_palette[clr];
+    } else {
+        printf("color error\n");
+    }
+}
 // create pixel
 static inline void pixel(uint8_t x, uint8_t y) {
     if (x < 30 && y < 30) {
@@ -408,13 +436,12 @@ static inline bool collidecircle(uint8_t c[3], uint8_t r[4]) {
     return distance_squared <= (radius * radius);
 }
 
-
 // draw screen
 static inline void draw(void) {
     for (uint8_t y = 0; y < 30; y++) {
         for (uint8_t x = 0; x < 30; x++) {
             if (((scr[y] >> x) & 1) == 1) {
-                printf("##");
+                printf("%s  \e[0m", _color);
             } else {
                 printf("  ");
             }
