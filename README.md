@@ -18,8 +18,9 @@ And only standard language C libraries are used
 11) collidepoint(const uint8_t r[4], uint8_t px, uint8_t py); - collide point & rect
 12) collideline(uint8_t rect[4], uint8_t line[4]) - collide line & rect
 13) collidecircle(uint8_t c[3], uint8_t r[4]) - collide circle & rect
-14) draw(); - screen rendering
-15) clear(); - clear screen data
+14) setColor(uint8_t clr); - color pixels EGA on screen (0-15)
+15) draw(); - screen rendering
+16) clear(); - clear screen data
 
 # peculiarities
 1) screen 30x30
